@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { NavWidget, NavList, List, BurgerWidget } from './element';
 import images from '../../assets';
+import { Link } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({
+  handleToggleSideBar,
+}: {
+  handleToggleSideBar: () => void;
+}) => {
   const [isScroll, setIsScroll] = useState(false);
 
   useEffect(() => {
@@ -15,7 +20,7 @@ const Navbar = () => {
   }, []);
 
   const renderBurgerIcon = () => (
-    <BurgerWidget>
+    <BurgerWidget onClick={handleToggleSideBar}>
       <img src={images.burger} alt="burger" />
     </BurgerWidget>
   );
@@ -23,7 +28,9 @@ const Navbar = () => {
   const renderListMenu = () => (
     <NavWidget isSticky={isScroll}>
       <div>
-        <img src={images.logo} alt="logo" />
+        <Link to="/">
+          <img src={images.logo} alt="logo" />
+        </Link>
       </div>
       <NavList>
         <List>About Us</List>
@@ -33,7 +40,9 @@ const Navbar = () => {
         <List>Partnership</List>
         <List>Dashboard</List>
         <List>
-          <button>Bookmark List</button>
+          <Link to="/bookmark-list">
+            <button>Bookmark List</button>
+          </Link>
         </List>
       </NavList>
       {renderBurgerIcon()}

@@ -11,7 +11,7 @@ export const NavWidget = styled.nav<{ isSticky?: boolean }>(({ isSticky }) => {
       alignItems: 'center',
       backgroundColor: '#fff',
       padding: '0 2rem',
-      '& > div:first-of-type > img': {
+      '& > div:first-of-type >  a > img': {
         width: 98,
         height: 44,
         objectFit: 'scale-down',
@@ -47,7 +47,7 @@ export const List = styled.li({
   color: '#2B46A6',
   verticalAlign: 'middle',
   lineHeight: 2,
-  '& > button': {
+  '& > a > button': {
     backgroundColor: '#1D707A',
     border: 'none',
     padding: '5px 24px',

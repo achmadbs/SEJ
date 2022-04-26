@@ -19,16 +19,25 @@ interface ListBooks {
   audio_length: number;
 }
 
+const getLocalBooks = () => {
+  return JSON.parse(localStorage.getItem('books') || '[]');
+};
+
 const DetailCategory = () => {
   const { state }: any = useLocation();
   const [currentPage, setCurrentPage] = useState(1);
   const [filterValue, setFilterValue] = useState('');
   const [listBooks, setListBooks] = useState<ListBooks[]>([]);
+  const [localBooks, setLocalBooks] = useState<ListBooks[]>(getLocalBooks());
 
   useEffect(() => {
     const fetchCategoryDetails = async () => {
       try {
-        const { data }: { data: ListBooks[] } = await ax.get('./data.json');
+        const { data }: { data: ListBooks[] } = await ax.get(
+          `fee-assessment-books?categoryId=${state.categoryId}&page=${
+            currentPage + 1
+          }&size=10`
+        );
         setListBooks(
           data.filter(
             ({ title }) =>
@@ -42,22 +51,21 @@ const DetailCategory = () => {
     fetchCategoryDetails();
   }, [state.categoryId, currentPage, filterValue]);
 
+  useEffect(() => {
+    localStorage.setItem('books', JSON.stringify(localBooks));
+  }, [localBooks]);
+
+  const handleSaveToLocal = (books: ListBooks) => {
+    setLocalBooks([...localBooks, books]);
+    alert('berhasil di tambahkan ke bookmark');
+  };
+
   const handlePageChange = (e: any) => {
     setCurrentPage(e.selected);
   };
 
-  return (
-    <Container>
-      <div>
-        <input
-          type="text"
-          placeholder="Search..."
-          value={filterValue}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setFilterValue(e.target.value)
-          }
-        />
-      </div>
+  const renderBookList = () => (
+    <>
       {listBooks.map((book, i) => (
         <div key={i}>
           <div>
@@ -101,18 +109,40 @@ const DetailCategory = () => {
                 </tr>
               </table>
             </TableWidget>
-            <button>Add to bookmark</button>
+            <button onClick={() => handleSaveToLocal(book)}>
+              Add to bookmark
+            </button>
           </ContentWidget>
         </div>
       ))}
       <Paginate
         breakLabel="..."
-        pageCount={Math.ceil(listBooks.length / 10)}
+        pageCount={100}
         pageRangeDisplayed={5}
         nextLabel=">"
         previousLabel="<"
         onPageChange={handlePageChange}
       />
+    </>
+  );
+
+  return (
+    <Container>
+      <div>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={filterValue}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setFilterValue(e.target.value)
+          }
+        />
+      </div>
+      {listBooks.length ? (
+        renderBookList()
+      ) : (
+        <h2 style={{ textAlign: 'center' }}>No Item</h2>
+      )}
     </Container>
   );
 };
